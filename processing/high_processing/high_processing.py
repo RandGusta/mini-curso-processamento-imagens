@@ -1,55 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import rasterio
+from rasterio.enums import Resampling
 
-#  ler informações além dos pixel
+pasta = "../../images/band/"
+nome = "CBERS_4A_WPM_20260918_201_131_L4_"
 
-# luz na faixa vermelha
-with rasterio.open("../../images/band/CBERS_4A_WPM_20260918_201_131_L4_BAND3.tif") as src:
-    red = src.read(1)
-    red_crs = src.crs
+def carregar_banda(numero):
+    with rasterio.open(pasta + nome + f"BAND{numero}.tif") as src:
+        dados = src.read(1, out_shape=(800, 800), resampling=Resampling.nearest, masked=True)
+        return dados.astype("float32").filled(np.nan)
 
-#luz na faixa infravermelha proxima
-with rasterio.open("../../images/band/CBERS_4A_WPM_20260918_201_131_L4_BAND4.tif") as src:
-    nir = src.read(1)
-    nir_crs = src.crs
+red = carregar_banda(3)
+nir = carregar_banda(4)
 
+denominador = nir + red
 
-print(f"RED: {red.shape}")
-print(f"NIR: {nir.shape}")
+ndvi = np.full(red.shape, np.nan, dtype=np.float32)
 
-print(f"CRS RED: {red_crs}")
-print(f"CRS NIR: {nir_crs}")
+validos = (np.isfinite(red) & np.isfinite(nir) & (denominador != 0) )
 
+np.divide(nir - red, denominador, out=ndvi, where=validos)
 
-# plt.imshow(red, cmap="cubehelix")
-# plt.title("Banda vermelha")
-# plt.colorbar()
-# plt.show()
+validos = np.isfinite(ndvi)
 
-# plt.imshow(nir, cmap="cubehelix")
-# plt.title("Banda Infravermelho Próximo")
-# plt.colorbar()
-# plt.show()
+print("Pixels válidos:", np.sum(validos))
+print("Pixels inválidos:", np.sum(~validos))
 
+print("NDVI mínimo:", np.nanmin(ndvi))
+print("NDVI máximo:", np.nanmax(ndvi))
+print("NDVI médio:", np.nanmean(ndvi))
 
-# matriz de valores com base nas duas imagens
-ndvi = (nir.astype(float) - red.astype(float)) / (nir.astype(float) + red.astype(float))
+print("Amostra:", ndvi[validos][:20])
 
-
-plt.imshow(ndvi, cmap="RdYlGn")
-plt.title("NDVI")
-plt.colorbar(label="NDVI")
+plt.imshow(ndvi, cmap="RdYlGn", vmin=-1, vmax=1)
+plt.colorbar(label="Índice de vegetação")
+plt.title("NDVI - CBERS-4A")
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-

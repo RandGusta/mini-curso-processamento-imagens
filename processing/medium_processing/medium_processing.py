@@ -5,45 +5,71 @@ from skimage.registration import phase_cross_correlation
 from scipy.ndimage import shift as image_shift
 
 
-imagem_antes = img.open("../../images/queimadas/queimadas-antes.png").convert("RGB")
-imagem_depois = img.open("../../images/queimadas/queimadas-depois.png").convert("RGB")
+def carregar_imagens(): 
+    imagem_antes = img.open("../../images/rios/rios-antes.png").convert("RGB")
+    imagem_depois = img.open("../../images/rios/rios-depois.png").convert("RGB")
+
+    return np.array(imagem_antes), np.array(imagem_depois)
+
+def ajustar_dimensoes(imagem_antes, imagem_depois):
+    altura = min(imagem_antes.shape[0], imagem_depois.shape[0])
+    largura = min(imagem_antes.shape[1], imagem_depois.shape[1])
+    print(f"altura :{altura}")
+    print(f"largura: {largura}")
+
+    imagem_antes = imagem_antes[:altura, :largura]
+    imagem_depois = imagem_depois[:altura, :largura]
+
+    return imagem_antes, imagem_depois
+
+def encontrar_deslocamento(imagem_antes, imagem_depois):
+    antes_gray = np.mean(imagem_antes, axis=2)
+    depois_gray = np.mean(imagem_depois, axis=2)
+
+    shift, error, phasediff = phase_cross_correlation(antes_gray, depois_gray)
+
+    print("Deslocamento encontrado:", shift)
+    print("Erro:", error)
+
+    return shift
 
 
-imagem_antes_np = np.array(imagem_antes).astype(np.int16)
-imagem_depois_np = np.array(imagem_depois).astype(np.int16)
-
-imagem_antes_gray = np.mean(imagem_antes_np, axis=2)
-imagem_depois_gray = np.mean(imagem_depois_np, axis=2)
+def alinhar_imagem(imagem, shift):
+    return image_shift(imagem, shift=(shift[0], shift[1], 0), order=1, mode="constant", cval=0)
 
 
-shift, error, phasediff = phase_cross_correlation(imagem_antes_gray, imagem_depois_gray)
-
-print(f"shift: {shift}")
-
-imagem_alinha = image_shift(imagem_depois_np, shift=(shift[0], shift[1], 0), order=1, mode='constant', cval=0)
-
+def calcular_diferenca(imagem_antes, imagem_depois):
+    diferenca = (imagem_depois.astype(np.int16) - imagem_antes.astype(np.int16))
+    diferenca_abs = np.abs(diferenca)
+    return np.mean(diferenca_abs, axis=2)
 
 
-# valor_medio_pixel = np.mean(imagem_antes_np[0, 1])
-# media = np.mean(imagem_antes_np, axis=2)
-# print(imagem_antes_np.dtype)
-
-difenca = imagem_depois_np - imagem_antes_np
-difenca_abs = np.abs(difenca)
-
-difenca_media = np.mean(difenca_abs, axis=2)
-
-plt.imshow(difenca_media, cmap="inferno")
-plt.colorbar()
-plt.show()
+def criar_mascara(diferenca, limiar):
+    return diferenca > limiar
 
 
+def salvar_resultado(imagem, nome):
+    plt.figure()
+    plt.imshow(imagem, cmap="inferno")
+    plt.axis("off")
+    plt.savefig(f"../../images/processadas/medium/{nome}.png", bbox_inches="tight", pad_inches=0)
+    plt.show()
+    plt.close()
 
 
+def main():
+    imagem_antes, imagem_depois = carregar_imagens()
+    imagem_antes, imagem_depois = ajustar_dimensoes(imagem_antes, imagem_depois)
+    shift = encontrar_deslocamento(imagem_antes, imagem_depois)
+    imagem_alinhada = alinhar_imagem(imagem_depois, shift)
+    diferenca = calcular_diferenca(imagem_antes, imagem_alinhada)
+    salvar_resultado(diferenca, "medium-diferenca")
+
+    limiar = 90
+    mascara = criar_mascara(diferenca, limiar)
+
+    salvar_resultado(mascara, "medium-mascara")
 
 
-
-
-
-
-
+if __name__ == "__main__":
+    main()
