@@ -3,39 +3,66 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-imagem_antes = img.open("../../images/rios/rios-antes.png").convert("RGB")
-imagem_depois = img.open("../../images/rios/rios-depois.png").convert("RGB")
+def carregar_imagens():
+    imagem_antes = img.open("../../images/rios/rios-antes.png").convert("RGB")
+    imagem_depois = img.open("../../images/rios/rios-depois.png").convert("RGB")
+
+    return np.array(imagem_antes), np.array(imagem_depois)
 
 
-imagem_antes_np = np.array(imagem_antes).astype(np.int16)
-imagem_depois_np = np.array(imagem_depois).astype(np.int16)
+def ajustar_dimensoes(imagem_antes, imagem_depois):
+    altura = min(imagem_antes.shape[0], imagem_depois.shape[0])
+    largura = min(imagem_antes.shape[1], imagem_depois.shape[1])
+
+    print(f"Altura: {altura}")
+    print(f"Largura: {largura}")
+
+    imagem_antes = imagem_antes[:altura, :largura]
+    imagem_depois = imagem_depois[:altura, :largura]
+
+    return imagem_antes, imagem_depois
 
 
-print(imagem_antes_np[0, 1])
+def calcular_diferenca(imagem_antes, imagem_depois):
+    diferenca = (
+        imagem_depois.astype(np.int16)
+        - imagem_antes.astype(np.int16)
+    )
+
+    diferenca_abs = np.abs(diferenca)
+
+    return np.mean(diferenca_abs, axis=2)
 
 
-valor_medio_pixel = np.mean(imagem_antes_np[0, 1])
-print(valor_medio_pixel)
+def salvar_resultado(imagem, nome):
+    plt.figure()
+    plt.imshow(imagem, cmap="inferno")
+    plt.colorbar(label="Diferença média dos pixels")
+    plt.axis("off")
 
-# media = np.mean(imagem_antes_np, axis=2)
-# print(imagem_antes_np.dtype)
+    plt.savefig(
+        f"../../images/processadas/simple/{nome}.png",
+        bbox_inches="tight",
+        pad_inches=0
+    )
 
-difenca = imagem_depois_np - imagem_antes_np
-difenca_abs = np.abs(difenca)
-
-difenca_media = np.mean(difenca_abs, axis=2)
-
-plt.imshow(difenca_media, cmap="inferno")
-plt.colorbar()
-plt.show()
-
-
+    plt.show()
+    plt.close()
 
 
+def main():
+    imagem_antes, imagem_depois = carregar_imagens()
+
+    imagem_antes, imagem_depois = ajustar_dimensoes(
+        imagem_antes, imagem_depois
+    )
+
+    diferenca = calcular_diferenca(
+        imagem_antes, imagem_depois
+    )
+
+    salvar_resultado(diferenca, "simple-diferenca")
 
 
-
-
-
-
-
+if __name__ == "__main__":
+    main()
