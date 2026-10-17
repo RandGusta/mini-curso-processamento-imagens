@@ -40,11 +40,11 @@ def salvar_resultado(imagem, nome):
     plt.colorbar(label="Diferença média dos pixels")
     plt.axis("off")
 
-    plt.savefig(
-        f"../../images/processadas/simple/{nome}.png",
-        bbox_inches="tight",
-        pad_inches=0
-    )
+    # plt.savefig(
+    #     f"../../images/processadas/simple/{nome}.png",
+    #     bbox_inches="tight",
+    #     pad_inches=0
+    # )
 
     plt.show()
     plt.close()
