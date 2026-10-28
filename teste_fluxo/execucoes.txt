@@ -1,0 +1,9 @@
+Entrada: C:\Users\gusta\Documents\Codex\2026-10-27\pre\outputs\teste_fluxo\imagens\recorte_teste.tif
+Saida: C:\Users\gusta\Documents\Codex\2026-10-27\pre\outputs\teste_fluxo\resultados\mascara_validos_01.tif
+Pixels validos: 252215; sem dados: 9929.
+Gravacao concluida. Agora a saida pode ser adicionada ao QGIS.
+
+Entrada: C:\Users\gusta\Documents\Codex\2026-10-27\pre\outputs\teste_fluxo\imagens\recorte_teste.tif
+Saida: C:\Users\gusta\Documents\Codex\2026-10-27\pre\outputs\teste_fluxo\resultados\mascara_validos_02.tif
+Pixels validos: 252215; sem dados: 9929.
+Gravacao concluida. Agora a saida pode ser adicionada ao QGIS.

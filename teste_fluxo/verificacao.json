@@ -1,0 +1,18 @@
+{
+  "mascaras_01_e_02": "exatas, com CRS e grade iguais a entrada",
+  "sobrescrita": "recusada sem alterar arquivo existente",
+  "entrada_igual_saida": "recusada sem alterar original",
+  "entrada_ausente": "erro claro; nenhum resultado criado",
+  "replica": "projeto com 3 camadas validas em outra pasta, sem depender de Downloads",
+  "execucao_replica": "nova mascara criada de outro diretorio de trabalho e em caminho com espacos",
+  "caminhos_projeto": [
+    "./imagens/recorte_teste.tif",
+    "./resultados/mascara_validos_01.tif",
+    "./resultados/mascara_validos_02.tif"
+  ],
+  "processo_elevado": false,
+  "pixels_validos": 252215,
+  "pixels_sem_dados": 9929,
+  "sha256_recorte": "2ac349878f2bd476083b39db1a61d8403c52814dd7223352bc1e1bc350f99b11",
+  "sha256_mascara_01": "a2c4a1d2742606d27a703dd023c3816d80f6bc4d5c28021d4ea40a01e9b93aa9"
+}
