@@ -1,0 +1,9 @@
+# TIFFs nacionais grandes: copie pelo pendrive ou baixe separadamente.
+/imagens/mapbiomas/*.tif
+/imagens/mapbiomas/*.tiff
+/imagens/mapbiomas/*.aux.xml
+# Resultados produzidos durante a aula.
+/resultados/**/*
+!/resultados/**/
+!/resultados/**/.gitkeep
+__pycache__/
